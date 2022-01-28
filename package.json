@@ -1,0 +1,29 @@
+{
+  "name": "quiz-me",
+  "version": "1.0.0",
+  "description": "A CLI Trivia Game",
+  "main": "bin/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yeasir01/quiz-me.git"
+  },
+  "author": "Yeasir Hugais",
+  "license": "MIT",
+  "bin": {
+    "quiz-me": "./bin/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/yeasir01/quiz-me/issues"
+  },
+  "homepage": "https://github.com/yeasir01/quiz-me#readme",
+  "dependencies": {
+    "axios": "^0.25.0",
+    "chalk": "^5.0.0",
+    "chalk-animation": "^1.6.0",
+    "inquirer": "^8.2.0"
+  }
+}
