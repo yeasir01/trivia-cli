@@ -14,7 +14,8 @@
   "author": "Yeasir Hugais",
   "license": "MIT",
   "bin": {
-    "quiz-me": "./bin/index.js"
+    "quiz-me": "./bin/index.js",
+    "quiz": "./bin/index.js"
   },
   "bugs": {
     "url": "https://github.com/yeasir01/quiz-me/issues"
