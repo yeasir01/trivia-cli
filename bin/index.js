@@ -10,7 +10,7 @@ const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
 const CATEGORY_URL = 'https://opentdb.com/api_category.php';
 
 const TOOL_ICON = "🛠";
-const CLOUD_ICON = "💭";
+const CLOUD_ICON = "[ 💭 ]";
 const LINE_WIDTH = 100;
 
 let correct = {};
@@ -24,6 +24,31 @@ const drawLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(w
 function handleError(err) {
     console.log("❌", chalk.redBright(err?.message || err?.msg || "Somthing Went Wrong!"))
 };
+
+function buildSearchParams(obj) {
+    return Object.keys(obj).map(key => key + '=' + obj[key]).join('&');
+};
+
+function getShuffledQuestions(wrong = [], right = "") {
+    let array = [...wrong, right];
+    
+    //Fisher–Yates Shuffle
+    let m = array.length
+    let t;
+    let i;
+
+    // While there remain elements to shuffle…
+    while (m) {
+      // Pick a remaining element…
+      i = Math.floor(Math.random() * m--);
+      // And swap it with the current element.
+      t = array[m];
+      array[m] = array[i];
+      array[i] = t;
+    }
+  
+    return array;
+}
 
 async function getSessionToken(url) {
     try {
@@ -49,13 +74,14 @@ async function getCategoryList(url) {
 async function welcome() {
     try {
         clear();
+        drawLine()
+        drawBreak()
         const title = chalkAnimation.rainbow(center('WELCOME TO QUIZ-ME!', LINE_WIDTH), 4);
-        const msg = center('The best trivial questions, now in your terminal!', LINE_WIDTH);
-
-        await sleep();
+        await sleep(1500);
+        console.log(chalk.italic.blueBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
         title.stop();
-
-        console.log(chalk.italic.gray(msg));
+        drawBreak()
+        drawLine()
     } catch (err) {
         handleError(err);
     }
@@ -83,7 +109,7 @@ async function getUserConfig() {
             type: 'rawlist',
             name: 'category',
             prefix: TOOL_ICON,
-            message: 'Choose a category',
+            message: 'Which category?',
             choices: categories
         }, {
             type: 'list',
@@ -120,10 +146,6 @@ async function getUserConfig() {
     }
 };
 
-function buildSearchParams(obj) {
-    return Object.keys(obj).map(key => key + '=' + obj[key]).join('&');
-};
-
 async function buildURLQuery() {
     try {
         const token = await getSessionToken(TOKEN_URL);
@@ -138,6 +160,9 @@ async function buildURLQuery() {
 
 async function renderQuestions() {
     try {
+        drawLine("-");
+        drawBreak();
+
         let questions = await getQuestions(fullURL);
         let prompts = [];
 
@@ -166,12 +191,12 @@ async function renderQuestions() {
                 prefix: CLOUD_ICON,
                 name: `${idx}`,
                 message: question,
-                choices: incorrect_answers
+                choices: getShuffledQuestions(incorrect_answers, correct_answer),
             })
         })
-
+        
         let answers = await inquirer.prompt(prompts);
-        console.log("answers", answers);
+        console.log("answered", answers);
         console.log('correct', correct)
 
     } catch (err) {
