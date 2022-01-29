@@ -3,20 +3,27 @@ import chalk from "chalk"
 import chalkAnimation from "chalk-animation"
 import axios from "axios";
 import inquirer from 'inquirer';
+import center from 'center-align';
 
 const BASE_URL = 'https://opentdb.com/api.php';
 const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
 const CATEGORY_URL = 'https://opentdb.com/api_category.php';
 
-let questions;
-let urlQuery;
+const TOOL_ICON = "🛠";
+const CLOUD_ICON = "💭";
+const LINE_WIDTH = 100;
 
-const log = console.log;
+let correct = {};
+let fullURL;
+
 const sleep = (ms = 2000) => new Promise(r => setTimeout(r, ms));
+const clear = () => console.clear();
+const drawBreak = () => console.log('\r');
+const drawLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(width));
 
 function handleError(err) {
-    log(chalk.redBright(err?.message || err?.msg))
-}
+    console.log("❌", chalk.redBright(err?.message || err?.msg || "Somthing Went Wrong!"))
+};
 
 async function getSessionToken(url) {
     try {
@@ -25,9 +32,9 @@ async function getSessionToken(url) {
             token: data.token
         };
     } catch (err) {
-        throw(err);
+        throw (err);
     }
-}
+};
 
 async function getCategoryList(url) {
     try {
@@ -35,18 +42,20 @@ async function getCategoryList(url) {
         const arry = data["trivia_categories"];
         return arry.map(item => ({ name: item.name, value: item.id }));
     } catch (err) {
-        throw(err)
+        throw (err)
     }
-}
+};
 
 async function welcome() {
     try {
-        console.clear();
-        const title = chalkAnimation.rainbow('WELCOME TO QUIZ-ME!', 4);
-        const msg = `The best trivial questions, now in your terminal!`;
+        clear();
+        const title = chalkAnimation.rainbow(center('WELCOME TO QUIZ-ME!', LINE_WIDTH), 4);
+        const msg = center('The best trivial questions, now in your terminal!', LINE_WIDTH);
+
         await sleep();
         title.stop();
-        log(chalk.italic.gray(msg));
+
+        console.log(chalk.italic.gray(msg));
     } catch (err) {
         handleError(err);
     }
@@ -55,75 +64,121 @@ async function welcome() {
 async function getQuestions(url) {
     try {
         const { data } = await axios.get(url);
-        questions = data.results;
+        return data.results;
     } catch (err) {
         handleError(err);
     }
 };
 
-async function getUserInput() {
+async function getUserConfig() {
     try {
         let categories = await getCategoryList(CATEGORY_URL);
 
-        let userInput = await inquirer.prompt([{
+        let answers = await inquirer.prompt([{
             type: 'number',
             name: 'amount',
+            prefix: TOOL_ICON,
             message: 'Number of questions?'
         }, {
             type: 'rawlist',
             name: 'category',
+            prefix: TOOL_ICON,
             message: 'Choose a category',
             choices: categories
         }, {
             type: 'list',
             name: 'difficulty',
+            prefix: TOOL_ICON,
             message: 'difficulty?',
-            choices: [{ 
-                name: "Easy", 
-                value: "easy" 
-            }, { 
-                name: "Medium", 
-                value: "medium" 
-            }, { 
-                name: "Hard", 
-                value: "hard" 
+            choices: [{
+                name: "Easy",
+                value: "easy"
+            }, {
+                name: "Medium",
+                value: "medium"
+            }, {
+                name: "Hard",
+                value: "hard"
             }]
         }, {
             type: 'list',
             name: 'type',
+            prefix: TOOL_ICON,
             message: 'Question types?',
-            choices: [{ 
-                name: "True/False", 
-                value: 'boolean' 
-            }, { 
-                name: "Multiple Choice", 
-                value: 'multiple' 
+            choices: [{
+                name: "True/False",
+                value: 'boolean'
+            }, {
+                name: "Multiple Choice",
+                value: 'multiple'
             }]
         }])
-        return userInput;
+
+        return answers;
     } catch (err) {
         handleError(err);
     }
-}
+};
 
-function getQueryString(obj){
+function buildSearchParams(obj) {
     return Object.keys(obj).map(key => key + '=' + obj[key]).join('&');
-}
+};
 
 async function buildURLQuery() {
     try {
         const token = await getSessionToken(TOKEN_URL);
-        const userInputObj = await getUserInput();
-        const queryString = getQueryString({...userInputObj, ...token});
+        const configObj = await getUserConfig();
+        const queryString = buildSearchParams({ ...token, ...configObj });
 
-        urlQuery = BASE_URL + "?" + queryString;
+        fullURL = BASE_URL + "?" + queryString;
     } catch (err) {
         handleError(err);
+    }
+};
+
+async function renderQuestions() {
+    try {
+        let questions = await getQuestions(fullURL);
+        let prompts = [];
+
+        if (questions.length === 0) {
+            return console.log(chalk.yellow(`🔍 Sorry, there doesn't seem to be any questions that match your critria. Please try again.`))
+        }
+
+        questions.map((item, idx) => {
+            const { type, question, correct_answer, incorrect_answers } = item;
+
+            //set the correct answers in an object for lookup later.
+            correct[idx] = correct_answer;
+
+            if (type === "boolean") {
+                return prompts.push({
+                    type: 'list',
+                    prefix: CLOUD_ICON,
+                    name: `${idx}`,
+                    message: question,
+                    choices: ["True", "False"]
+                })
+            }
+
+            prompts.push({
+                type: 'list',
+                prefix: CLOUD_ICON,
+                name: `${idx}`,
+                message: question,
+                choices: incorrect_answers
+            })
+        })
+
+        let answers = await inquirer.prompt(prompts);
+        console.log("answers", answers);
+        console.log('correct', correct)
+
+    } catch (err) {
+        handleError(err)
     }
 }
 
 await welcome();
 await buildURLQuery();
-//await getQuestions(urlQuery);
-
-log(urlQuery);
+await renderQuestions();

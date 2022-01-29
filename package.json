@@ -22,6 +22,7 @@
   "homepage": "https://github.com/yeasir01/quiz-me#readme",
   "dependencies": {
     "axios": "^0.25.0",
+    "center-align": "^1.0.1",
     "chalk": "^5.0.0",
     "chalk-animation": "^1.6.0",
     "inquirer": "^8.2.0"
