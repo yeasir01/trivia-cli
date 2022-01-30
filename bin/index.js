@@ -4,6 +4,7 @@ import chalkAnimation from "chalk-animation"
 import axios from "axios";
 import inquirer from 'inquirer';
 import center from 'center-align';
+import he from 'he';
 
 const BASE_URL = 'https://opentdb.com/api.php';
 const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
@@ -31,7 +32,7 @@ function buildSearchParams(obj) {
 };
 
 function getShuffledQuestions(wrong = [], right = "") {
-    let array = [...wrong, right];
+    let array = [...wrong, right].map(item=> he.decode(item));
     
     //Fisher–Yates Shuffle
     let m = array.length
@@ -77,7 +78,7 @@ async function welcome() {
         clear();
         drawLine()
         drawBreak()
-        const title = chalkAnimation.rainbow(center('WELCOME TO QUIZ-ME!', LINE_WIDTH), 4);
+        const title = chalkAnimation.rainbow(center('WELCOME TO TRIVIA-CLI!', LINE_WIDTH), 4);
         await sleep(1500);
         console.log(chalk.italic.whiteBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
         title.stop();
@@ -173,6 +174,7 @@ async function renderQuestions() {
 
         questions.map((item, idx) => {
             const { type, question, correct_answer, incorrect_answers } = item;
+            const parsedQuestion = he.decode(question);
 
             //set the correct answers in an object for lookup later.
             correct[idx] = correct_answer;
@@ -182,7 +184,7 @@ async function renderQuestions() {
                     type: 'list',
                     prefix: QUESTION_ICON,
                     name: `${idx}`,
-                    message: question,
+                    message: parsedQuestion,
                     choices: ["True", "False"]
                 })
             }
@@ -191,7 +193,7 @@ async function renderQuestions() {
                 type: 'list',
                 prefix: QUESTION_ICON,
                 name: `${idx}`,
-                message: question,
+                message: parsedQuestion,
                 choices: getShuffledQuestions(incorrect_answers, correct_answer),
             })
         })

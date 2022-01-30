@@ -26,6 +26,7 @@
     "center-align": "^1.0.1",
     "chalk": "^5.0.0",
     "chalk-animation": "^1.6.0",
+    "he": "^1.2.0",
     "inquirer": "^8.2.0",
     "log-symbols": "^5.1.0"
   }
