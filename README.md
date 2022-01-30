@@ -1,2 +1,2 @@
-# quiz-me
+# trivia-cli
 A CLI Trivia Game
