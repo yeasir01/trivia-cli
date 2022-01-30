@@ -1,7 +1,7 @@
 {
-  "name": "quiz-me",
+  "name": "trivia-cli",
   "version": "1.0.0",
-  "description": "A CLI Trivia Game",
+  "description": "A trivia Game You can play in your CLI. Question from the Open Trivia API",
   "main": "bin/index.js",
   "type": "module",
   "scripts": {
@@ -9,23 +9,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yeasir01/quiz-me.git"
+    "url": "git+https://github.com/yeasir01/trivia-cli.git"
   },
   "author": "Yeasir Hugais",
   "license": "MIT",
   "bin": {
-    "quiz-me": "./bin/index.js",
+    "trivia-cli": "./bin/index.js",
     "quiz": "./bin/index.js"
   },
   "bugs": {
-    "url": "https://github.com/yeasir01/quiz-me/issues"
+    "url": "https://github.com/yeasir01/trivia-cli/issues"
   },
-  "homepage": "https://github.com/yeasir01/quiz-me#readme",
+  "homepage": "https://github.com/yeasir01/trivia-cli#readme",
   "dependencies": {
     "axios": "^0.25.0",
     "center-align": "^1.0.1",
     "chalk": "^5.0.0",
     "chalk-animation": "^1.6.0",
-    "inquirer": "^8.2.0"
+    "inquirer": "^8.2.0",
+    "log-symbols": "^5.1.0"
   }
 }

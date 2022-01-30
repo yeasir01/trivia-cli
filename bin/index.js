@@ -9,8 +9,9 @@ const BASE_URL = 'https://opentdb.com/api.php';
 const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
 const CATEGORY_URL = 'https://opentdb.com/api_category.php';
 
-const TOOL_ICON = "🛠";
-const CLOUD_ICON = "[ 💭 ]";
+const CONFIG_ICON = chalk.bold.yellowBright(' [>]');
+const QUESTION_ICON = chalk.bold.greenBright(` [?]`);
+const FAIL_ICON = chalk.bold.redBright(' [X]')
 const LINE_WIDTH = 100;
 
 let correct = {};
@@ -22,7 +23,7 @@ const drawBreak = () => console.log('\r');
 const drawLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(width));
 
 function handleError(err) {
-    console.log("❌", chalk.redBright(err?.message || err?.msg || "Somthing Went Wrong!"))
+    console.log(FAIL_ICON, chalk.redBright(err?.message || err?.msg || "Somthing Went Wrong!"))
 };
 
 function buildSearchParams(obj) {
@@ -78,7 +79,7 @@ async function welcome() {
         drawBreak()
         const title = chalkAnimation.rainbow(center('WELCOME TO QUIZ-ME!', LINE_WIDTH), 4);
         await sleep(1500);
-        console.log(chalk.italic.blueBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
+        console.log(chalk.italic.whiteBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
         title.stop();
         drawBreak()
         drawLine()
@@ -103,18 +104,18 @@ async function getUserConfig() {
         let answers = await inquirer.prompt([{
             type: 'number',
             name: 'amount',
-            prefix: TOOL_ICON,
+            prefix: CONFIG_ICON,
             message: 'Number of questions?'
         }, {
             type: 'rawlist',
             name: 'category',
-            prefix: TOOL_ICON,
+            prefix: CONFIG_ICON,
             message: 'Which category?',
             choices: categories
         }, {
             type: 'list',
             name: 'difficulty',
-            prefix: TOOL_ICON,
+            prefix: CONFIG_ICON,
             message: 'difficulty?',
             choices: [{
                 name: "Easy",
@@ -129,7 +130,7 @@ async function getUserConfig() {
         }, {
             type: 'list',
             name: 'type',
-            prefix: TOOL_ICON,
+            prefix: CONFIG_ICON,
             message: 'Question types?',
             choices: [{
                 name: "True/False",
@@ -179,7 +180,7 @@ async function renderQuestions() {
             if (type === "boolean") {
                 return prompts.push({
                     type: 'list',
-                    prefix: CLOUD_ICON,
+                    prefix: QUESTION_ICON,
                     name: `${idx}`,
                     message: question,
                     choices: ["True", "False"]
@@ -188,7 +189,7 @@ async function renderQuestions() {
 
             prompts.push({
                 type: 'list',
-                prefix: CLOUD_ICON,
+                prefix: QUESTION_ICON,
                 name: `${idx}`,
                 message: question,
                 choices: getShuffledQuestions(incorrect_answers, correct_answer),
