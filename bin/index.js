@@ -13,9 +13,10 @@ const CATEGORY_URL = 'https://opentdb.com/api_category.php';
 const CONFIG_ICON = chalk.bold.yellowBright(' [>]');
 const QUESTION_ICON = chalk.bold.greenBright(` [?]`);
 const FAIL_ICON = chalk.bold.redBright(' [X]')
+const INFO_ICON = chalk.bold.yellowBright(' [I]')
 const LINE_WIDTH = 100;
 
-let correct = {};
+let answerLookup = {};
 let fullURL;
 
 const sleep = (ms = 2000) => new Promise(r => setTimeout(r, ms));
@@ -35,7 +36,7 @@ function getShuffledQuestions(wrong = [], right = "") {
     let array = [...wrong, right].map(item=> he.decode(item));
     
     //Fisher–Yates Shuffle
-    let m = array.length
+    let m = array.length;
     let t;
     let i;
 
@@ -63,6 +64,24 @@ async function getSessionToken(url) {
     }
 };
 
+function displayScore(userAnswers, correctAnswers){
+    let correct = 0;
+    let wrong = 0;
+    
+    for (let key in userAnswers){
+        const isCorrect = userAnswers[key] === correctAnswers[key];
+        isCorrect ? correct++ : wrong++;
+    }
+
+    let score = Math.round((correct / (correct + wrong)) * 100);
+    let icon = score >= 50 ? chalk.greenBright(' [S]') : chalk.redBright(' [S]');
+    
+    drawBreak();
+    console.log('CORRECT ANSWERS');
+    console.table(answerLookup);
+    console.log(icon ,`SCORE: ${score}% CORRECT: ${correct} WRONG: ${wrong}`);
+}
+
 async function getCategoryList(url) {
     try {
         const { data } = await axios.get(url);
@@ -77,12 +96,12 @@ async function welcome() {
     try {
         clear();
         drawLine()
-        drawBreak()
+        //drawBreak()
         const title = chalkAnimation.rainbow(center('WELCOME TO TRIVIA-CLI!', LINE_WIDTH), 4);
-        await sleep(1500);
+        await sleep(2500);
         console.log(chalk.italic.whiteBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
         title.stop();
-        drawBreak()
+        //drawBreak()
         drawLine()
     } catch (err) {
         handleError(err);
@@ -169,7 +188,7 @@ async function renderQuestions() {
         let prompts = [];
 
         if (questions.length === 0) {
-            return console.log(chalk.yellow(`🔍 Sorry, there doesn't seem to be any questions that match your critria. Please try again.`))
+            return console.log(chalk.yellow(INFO_ICON, `Sorry, there doesn't seem to be any questions that match your critria. Please try again.`))
         }
 
         questions.map((item, idx) => {
@@ -177,7 +196,7 @@ async function renderQuestions() {
             const parsedQuestion = he.decode(question);
 
             //set the correct answers in an object for lookup later.
-            correct[idx] = correct_answer;
+            answerLookup[idx] = correct_answer;
 
             if (type === "boolean") {
                 return prompts.push({
@@ -198,10 +217,9 @@ async function renderQuestions() {
             })
         })
         
-        let answers = await inquirer.prompt(prompts);
-        console.log("answered", answers);
-        console.log('correct', correct)
-
+        let userAnswers = await inquirer.prompt(prompts);
+        
+        displayScore(userAnswers, answerLookup)
     } catch (err) {
         handleError(err)
     }
