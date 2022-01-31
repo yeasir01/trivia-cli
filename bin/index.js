@@ -4,7 +4,7 @@ import chalkAnimation from "chalk-animation"
 import axios from "axios";
 import inquirer from 'inquirer';
 import center from 'center-align';
-import he from 'he';
+import html from 'he';
 
 const BASE_URL = 'https://opentdb.com/api.php';
 const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
@@ -33,7 +33,7 @@ function buildSearchParams(obj) {
 };
 
 function getShuffledQuestions(wrong = [], right = "") {
-    let array = [...wrong, right].map(item=> he.decode(item));
+    let array = [...wrong, right].map(sentance => html.decode(sentance));
     
     //Fisher–Yates Shuffle
     let m = array.length;
@@ -74,7 +74,7 @@ function displayScore(userAnswers, correctAnswers){
     }
 
     let score = Math.round((correct / (correct + wrong)) * 100);
-    let icon = score >= 50 ? chalk.greenBright(' [S]') : chalk.redBright(' [S]');
+    let icon = score >= 50 ? chalk.greenBright('[S]') : chalk.redBright('[S]');
     
     drawBreak();
     console.log('CORRECT ANSWERS');
@@ -96,12 +96,10 @@ async function welcome() {
     try {
         clear();
         drawLine()
-        //drawBreak()
         const title = chalkAnimation.rainbow(center('WELCOME TO TRIVIA-CLI!', LINE_WIDTH), 4);
         await sleep(2500);
         console.log(chalk.italic.whiteBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
         title.stop();
-        //drawBreak()
         drawLine()
     } catch (err) {
         handleError(err);
@@ -193,10 +191,10 @@ async function renderQuestions() {
 
         questions.map((item, idx) => {
             const { type, question, correct_answer, incorrect_answers } = item;
-            const parsedQuestion = he.decode(question);
+            const parsedQuestion = html.decode(question);
 
             //set the correct answers in an object for lookup later.
-            answerLookup[idx] = correct_answer;
+            answerLookup[idx] = html.decode(correct_answer);
 
             if (type === "boolean") {
                 return prompts.push({
