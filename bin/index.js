@@ -26,14 +26,15 @@ const drawLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(w
 
 function handleError(err) {
     console.log(FAIL_ICON, chalk.redBright(err?.message || err?.msg || "Somthing Went Wrong!"))
+    process.exit(0);
 };
 
 function buildSearchParams(obj) {
     return Object.keys(obj).map(key => key + '=' + obj[key]).join('&');
 };
 
-function getShuffledQuestions(wrong = [], right = "") {
-    let array = [...wrong, right].map(sentance => html.decode(sentance));
+function getShuffledAnswers(wrong = [], right = "") {
+    let array = [...wrong, right].map(answer => html.decode(answer));
     
     //Fisher–Yates Shuffle
     let m = array.length;
@@ -98,7 +99,8 @@ async function welcome() {
         drawLine()
         const title = chalkAnimation.rainbow(center('WELCOME TO TRIVIA-CLI!', LINE_WIDTH), 4);
         await sleep(2500);
-        console.log(chalk.italic.whiteBright(center('The best trivia questions, now live in your terminal!', LINE_WIDTH)));
+        console.log(chalk.whiteBright(center('The best community-sourced trivia questions are now in your terminal!', LINE_WIDTH)));
+        console.log(chalk.italic.whiteBright(center('Powered by Open Trivia API, Developed by Yeasir H.', LINE_WIDTH)));
         title.stop();
         drawLine()
     } catch (err) {
@@ -123,7 +125,8 @@ async function getUserConfig() {
             type: 'number',
             name: 'amount',
             prefix: CONFIG_ICON,
-            message: 'Number of questions?'
+            message: 'Number of questions?',
+            default: 3,
         }, {
             type: 'rawlist',
             name: 'category',
@@ -211,7 +214,7 @@ async function renderQuestions() {
                 prefix: QUESTION_ICON,
                 name: `${idx}`,
                 message: parsedQuestion,
-                choices: getShuffledQuestions(incorrect_answers, correct_answer),
+                choices: getShuffledAnswers(incorrect_answers, correct_answer),
             })
         })
         
