@@ -4,4 +4,7 @@
 <img src="./media/useage.gif">
 
 ## Installation
-``npm install -g https://github.com/yeasir01/trivia-cli``
+$  ```npm install -g https://github.com/yeasir01/trivia-cli```
+
+## Run
+$  ```quiz```
