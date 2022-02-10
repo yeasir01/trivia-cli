@@ -7,4 +7,4 @@
 ```npm install -g https://github.com/yeasir01/trivia-cli```
 
 ## Run
-```quiz```
+```quiz or trivia-cli```
