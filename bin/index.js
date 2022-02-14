@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import chalk from "chalk"
-import chalkAnimation from "chalk-animation"
+import figlet from "figlet";
 import axios from "axios";
 import inquirer from 'inquirer';
 import center from 'center-align';
@@ -10,22 +10,21 @@ const BASE_URL = 'https://opentdb.com/api.php';
 const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
 const CATEGORY_URL = 'https://opentdb.com/api_category.php';
 
-const CONFIG_ICON = chalk.bold.yellowBright(' [>]');
-const QUESTION_ICON = chalk.bold.greenBright(` [?]`);
-const FAIL_ICON = chalk.bold.redBright(' [X]')
+const CONFIG_ICON = chalk.bold.green(' [?]');
+const FAIL_ICON = chalk.bold.redBright(' [!]')
 const INFO_ICON = chalk.bold.yellowBright(' [I]')
-const LINE_WIDTH = 100;
+const LINE_WIDTH = 81;
 
 let answerLookup = {};
 let fullURL;
 
-const sleep = (ms = 2000) => new Promise(r => setTimeout(r, ms));
-const clear = () => console.clear();
-const drawBreak = () => console.log('\r');
-const drawLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(width));
+const insertBreak = () => console.log('\r');
+const insertLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(width));
+const indexIcon = (idx) => chalk.yellowBright(` [${idx + 1}]`);
 
 function handleError(err) {
-    console.log(FAIL_ICON, chalk.redBright(err?.message || err?.msg || "Somthing Went Wrong!"))
+    console.log(FAIL_ICON, chalk.redBright(err?.message || err?.msg || "Something Went Wrong!"))
+    //console.trace(err) //Uncomment this line for Debugging.
     process.exit(0);
 };
 
@@ -41,11 +40,8 @@ function getShuffledAnswers(wrong = [], right = "") {
     let t;
     let i;
 
-    // While there remain elements to shuffle…
     while (m) {
-      // Pick a remaining element…
       i = Math.floor(Math.random() * m--);
-      // And swap it with the current element.
       t = array[m];
       array[m] = array[i];
       array[i] = t;
@@ -65,46 +61,36 @@ async function getSessionToken(url) {
     }
 };
 
-function displayScore(userAnswers, correctAnswers){
+function handleScore(userAnswers, correctAnswers){
     let correct = 0;
     let wrong = 0;
+    let lookUp = {};
     
     for (let key in userAnswers){
         const isCorrect = userAnswers[key] === correctAnswers[key];
         isCorrect ? correct++ : wrong++;
+        
+        let idx = parseInt(key) + 1;
+        lookUp[idx] = correctAnswers[key]
     }
 
     let score = Math.round((correct / (correct + wrong)) * 100);
-    let icon = score >= 50 ? chalk.greenBright('[S]') : chalk.redBright('[S]');
+    let icon = score >= 50 ? chalk.greenBright(' [S]') : chalk.redBright(' [S]');
     
-    drawBreak();
-    console.log('CORRECT ANSWERS');
-    console.table(answerLookup);
-    console.log(icon ,`SCORE: ${score}% CORRECT: ${correct} WRONG: ${wrong}`);
+    insertBreak();
+    console.log(chalk.italic.grey(`HINT: Use the table below to check your answers.`));
+    console.table(lookUp);
+    insertBreak();
+    console.log(icon ,`CORRECT: ${correct} WRONG: ${wrong} SCORE: ${score}% `);
 }
 
 async function getCategoryList(url) {
     try {
         const { data } = await axios.get(url);
-        const arry = data["trivia_categories"];
-        return arry.map(item => ({ name: item.name, value: item.id }));
+        const array = data["trivia_categories"];
+        return array.map(item => ({ name: item.name, value: item.id }));
     } catch (err) {
         throw (err)
-    }
-};
-
-async function welcome() {
-    try {
-        clear();
-        drawLine()
-        const title = chalkAnimation.rainbow(center('WELCOME TO TRIVIA-CLI!', LINE_WIDTH), 4);
-        await sleep(2500);
-        console.log(chalk.whiteBright(center('The best community-sourced trivia questions are now in your terminal!', LINE_WIDTH)));
-        console.log(chalk.italic.whiteBright(center('Powered by Open Trivia API, Developed by Yeasir H.', LINE_WIDTH)));
-        title.stop();
-        drawLine()
-    } catch (err) {
-        handleError(err);
     }
 };
 
@@ -182,49 +168,71 @@ async function buildURLQuery() {
 
 async function renderQuestions() {
     try {
-        drawLine("-");
-        drawBreak();
+        insertLine();
+        insertBreak();
 
         let questions = await getQuestions(fullURL);
-        let prompts = [];
+        let userPrompts = [];
 
         if (questions.length === 0) {
-            return console.log(chalk.yellow(INFO_ICON, `Sorry, there doesn't seem to be any questions that match your critria. Please try again.`))
+            console.log(chalk.yellow(INFO_ICON, `Sorry, there does not seem to be any questions that match your criteria. Please try again.`))
+            return process.exit(1);
         }
 
         questions.map((item, idx) => {
             const { type, question, correct_answer, incorrect_answers } = item;
             const parsedQuestion = html.decode(question);
 
-            //set the correct answers in an object for lookup later.
+            //Parse & store the correct answers in an object for lookup later.
             answerLookup[idx] = html.decode(correct_answer);
 
             if (type === "boolean") {
-                return prompts.push({
+                return userPrompts.push({
                     type: 'list',
-                    prefix: QUESTION_ICON,
+                    prefix: indexIcon(idx),
                     name: `${idx}`,
                     message: parsedQuestion,
                     choices: ["True", "False"]
                 })
             }
 
-            prompts.push({
+            userPrompts.push({
                 type: 'list',
-                prefix: QUESTION_ICON,
+                prefix: indexIcon(idx),
                 name: `${idx}`,
                 message: parsedQuestion,
                 choices: getShuffledAnswers(incorrect_answers, correct_answer),
             })
         })
         
-        let userAnswers = await inquirer.prompt(prompts);
+        let userAnswers = await inquirer.prompt(userPrompts);
         
-        displayScore(userAnswers, answerLookup)
+        handleScore(userAnswers, answerLookup)
     } catch (err) {
         handleError(err)
     }
 }
+
+async function welcome() {
+    try {
+        console.clear();
+        insertLine()
+        console.log(chalk.bold.magenta(center('  TRIVIA CLI', LINE_WIDTH)))
+        insertBreak()
+        console.log(chalk.greenBright(figlet.textSync(` Let's Play!`, {
+            font: 'ANSI Shadow',
+            horizontalLayout: 'default',
+            verticalLayout: 'full',
+            whitespaceBreak: true
+        })))
+        console.log(chalk.whiteBright(center('The best community-sourced trivia questions are now in your terminal!', LINE_WIDTH)));
+        console.log(chalk.italic.whiteBright(center('Powered by Open Trivia API, Developed by Yeasir H.', LINE_WIDTH)));
+        insertBreak()
+        insertLine()
+    } catch (err) {
+        handleError(err);
+    }
+};
 
 await welcome();
 await buildURLQuery();
