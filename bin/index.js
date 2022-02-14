@@ -5,6 +5,7 @@ import axios from "axios";
 import inquirer from 'inquirer';
 import center from 'center-align';
 import html from 'he';
+import clear from "cli-clear";
 
 const BASE_URL = 'https://opentdb.com/api.php';
 const TOKEN_URL = 'https://opentdb.com/api_token.php?command=request';
@@ -16,7 +17,6 @@ const INFO_ICON = chalk.bold.yellowBright(' [I]')
 const LINE_WIDTH = 81;
 
 let answerLookup = {};
-let fullURL;
 
 const insertBreak = () => console.log('\r');
 const insertLine = (symbol="*", width = LINE_WIDTH) => console.log(symbol.repeat(width));
@@ -160,7 +160,7 @@ async function buildURLQuery() {
         const configObj = await getUserConfig();
         const queryString = buildSearchParams({ ...token, ...configObj });
 
-        fullURL = BASE_URL + "?" + queryString;
+        return BASE_URL + "?" + queryString;
     } catch (err) {
         handleError(err);
     }
@@ -171,6 +171,7 @@ async function renderQuestions() {
         insertLine();
         insertBreak();
 
+        let fullURL = await buildURLQuery();
         let questions = await getQuestions(fullURL);
         let userPrompts = [];
 
@@ -215,7 +216,7 @@ async function renderQuestions() {
 
 async function welcome() {
     try {
-        console.clear();
+        clear();
         insertLine()
         console.log(chalk.bold.magenta(center('  TRIVIA CLI', LINE_WIDTH)))
         insertBreak()
@@ -234,6 +235,5 @@ async function welcome() {
     }
 };
 
-await welcome();
-await buildURLQuery();
-await renderQuestions();
+welcome()
+    .then(renderQuestions);
