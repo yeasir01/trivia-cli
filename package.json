@@ -1,7 +1,7 @@
 {
   "name": "trivia-cli",
   "version": "1.0.0",
-  "description": "A trivia Game You can play in your CLI. Question provided by the Open Trivia API",
+  "description": "A trivia Game played in the CLI. Question provided by the Open Trivia API",
   "main": "bin/index.js",
   "type": "module",
   "scripts": {
@@ -25,9 +25,8 @@
     "axios": "^0.25.0",
     "center-align": "^1.0.1",
     "chalk": "^5.0.0",
-    "chalk-animation": "^1.3.0",
+    "figlet": "^1.5.2",
     "he": "^1.2.0",
-    "inquirer": "^8.2.0",
-    "log-symbols": "^5.1.0"
+    "inquirer": "^8.2.0"
   }
 }
