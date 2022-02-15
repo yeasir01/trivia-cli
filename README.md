@@ -11,10 +11,10 @@
 Trivia-CLI is a question/answer game played in the command line. You'll start by answering a few configuration options. Based on you're selection you be presented with a set of questions. Once all questions have been answered a table displaying the correct answers and your score will be generated.
 
 ***Configuration Options***
-- Number of Questions [1-50]
-- Category [24+]
-- Difficulty [easy, medium, hard]
-- Type [Multiple Choice, True/False]
+- Number of Questions (1-50)
+- Categories (24+)
+- Difficulty (easy, medium, hard)
+- Type (Multiple Choice or True/False)
 
 ## 📸 Screenshot
 ---
