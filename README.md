@@ -24,7 +24,7 @@ Trivia-CLI is a question/answer game played in the command line. You'll start by
 ---
 - Node
 - NPM or Yarn Package Manager
-- Internet Connection (For connecting to the API)
+- Internet Connection (API Connection)
 
 ## 🚩 Getting Started
 ---
