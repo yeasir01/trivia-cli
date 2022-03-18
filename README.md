@@ -12,7 +12,7 @@ Trivia-CLI is a question/answer game played in the command line. You'll start by
 
 ***Configuration Options***
 - Number of Questions (1-50)
-- Categories (24+)
+- Categories (24+ to choose from)
 - Difficulty (easy, medium, hard)
 - Type (Multiple Choice or True/False)
 
@@ -20,10 +20,10 @@ Trivia-CLI is a question/answer game played in the command line. You'll start by
 ---
 <img src="./media/screenshot.png">
 
-## 📦 Dependencies
+## 📦 Dependencies & Requirements
 ---
-- Node
-- NPM or Yarn Package Manager
+- Node 17.4+
+- NPM or Yarn Package Manager 8.4+
 - Internet Connection (API)
 
 ## 🚩 Getting Started
@@ -31,17 +31,17 @@ Trivia-CLI is a question/answer game played in the command line. You'll start by
 
 For NPM
 ```
-$ npm install -g https://github.com/yeasir01/trivia-cli
+$ npm install -g yeasir01/trivia-cli
 ```
 For Yarn
 ```
-$ yarn install -g https://github.com/yeasir01/trivia-cli
+$ yarn global add https://github.com/yeasir01/trivia-cli
 ```
 
 Then from any command line interface...
 
 ```
-$ quiz || trivia-cli
+$ quiz or trivia-cli
 ```
 
 ## ⭐ Credits
