@@ -7,7 +7,6 @@
 
 
 # Trivia-CLI |
-
 Welcome to Trivia-CLI, a command-line-based quiz game that will test your knowledge on various topics! This simple yet engaging game allows you to configure your quiz preferences, answer questions, and see how well you score. Challenge yourself or compete with friends to see who can achieve the highest score!
 
 ## ⚙️ Play Options
@@ -21,21 +20,17 @@ Adjust the difficulty level of the questions based on your comfort and expertise
 Decide whether you prefer multiple-choice questions or true/false questions.
 
 ## 📸 Screenshot
----
 <img src="./media/screenshot.png">
 
 ## 🎮 Gameplay
 Once you've configured your preferences, the game will begin. Answer each question to the best of your ability. After completing the quiz, a table will be displayed showing the correct answers and your final score.
 
 ## 📦 Dependencies & Requirements
----
 - Node 17.4+
 - NPM or Yarn Package Manager 8.4+
 - Internet Connection (API)
 
 ## 🚩 Getting Started
----
-
 For NPM
 ```
 $ npm install -g yeasir01/trivia-cli
@@ -52,9 +47,7 @@ $ quiz or trivia-cli
 ```
 
 ## ⭐ Credits
----
 [OpenTrivia API](https://opentdb.com/) Free to use, user-contributed trivia question database.
-
 
 ## ⚖️ License
 This project is licensed under the MIT License - see the LICENSE file for details.
