@@ -6,19 +6,26 @@
 </p>
 
 
-# CLI Game |
+# Trivia-CLI |
 
-Trivia-CLI is a question/answer game played in the command line. You'll start by answering a few configuration options. Based on you're selection you be presented with a set of questions. Once all questions have been answered a table displaying the correct answers and your score will be generated.
+Welcome to Trivia-CLI, a command-line-based quiz game that will test your knowledge on various topics! This simple yet engaging game allows you to configure your quiz preferences, answer questions, and see how well you score. Challenge yourself or compete with friends to see who can achieve the highest score!
 
-***Configuration Options***
-- Number of Questions (1-50)
-- Categories (24+ to choose from)
-- Difficulty (easy, medium, hard)
-- Type (Multiple Choice or True/False)
+## ⚙️ Play Options
+* **Number of Questions (1-50):**
+Choose the number of questions you want to answer in the quiz.
+* **Categories (24+ to choose from):**
+Select a category that interests you. Whether it's science, history, or general knowledge, there's something for everyone.
+* **Difficulty (easy, medium, hard):**
+Adjust the difficulty level of the questions based on your comfort and expertise.
+* **Type (Multiple Choice or True/False):**
+Decide whether you prefer multiple-choice questions or true/false questions.
 
 ## 📸 Screenshot
 ---
 <img src="./media/screenshot.png">
+
+## 🎮 Gameplay
+Once you've configured your preferences, the game will begin. Answer each question to the best of your ability. After completing the quiz, a table will be displayed showing the correct answers and your final score.
 
 ## 📦 Dependencies & Requirements
 ---
@@ -47,3 +54,8 @@ $ quiz or trivia-cli
 ## ⭐ Credits
 ---
 [OpenTrivia API](https://opentdb.com/) Free to use, user-contributed trivia question database.
+
+
+## ⚖️ License
+This project is licensed under the MIT License - see the LICENSE file for details.
+Have fun playing Trivia-CLI, and may your knowledge shine!
